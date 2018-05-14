@@ -1,0 +1,6 @@
+*.pyc
+keys.py
+*.sw*
+*~
+.venv/
+.deps/
