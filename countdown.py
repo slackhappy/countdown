@@ -94,7 +94,6 @@ def render_loop(glyphs, font):
         now = time.time()
         if now - last_mta_fetch > 60:
             try:
-                times_by_line = {}
                 status = mta.status()
                 for feed, stops in GTFS_STOPS.iteritems():
                     times = mta.times_from_gtfs_realtime(feed, stops)
@@ -137,7 +136,10 @@ def render_loop(glyphs, font):
                 ))
 
         if current:
-            status_lines.append(StatusLine([StatusText(font, str(current['temp']) + 'o')]))
+            status_lines.append(StatusLine([
+                StatusText(font, str(current['temp'])),
+                StatusText(glyphs, 'o')
+            ]))
 
         if err:
             status_lines.append(StatusLine([StatusText(font, err)]))
