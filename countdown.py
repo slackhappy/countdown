@@ -20,11 +20,6 @@ GLYPH_COLORS = {
     '6': COLORS['green'],
 }
 
-GTFS_STOPS = {
-    1: set(['626S']), 
-    16: set(['Q04S'])
-}
-
 STATUS_COLORS = {
     'GOOD SERVICE': COLORS['green'],
     'SERVICE CHANGE': COLORS['orange'],
@@ -32,7 +27,7 @@ STATUS_COLORS = {
     'DELAYS' : COLORS['red'],
 }
 
-SUBWAYTIME_STOPS = [('Q/Q04', 'Downtown')]#, ('5/626', 'Downtown')]
+SUBWAYTIME_STOPS = [('Q/Q04', 'Downtown'), ('5/626', 'Downtown')]
 LINES = ['4', '5', '6', 'Q']
 
 class StatusText:
@@ -95,11 +90,7 @@ def render_loop(glyphs, font):
         if now - last_mta_fetch > 60:
             try:
                 status = mta.status()
-                for feed, stops in GTFS_STOPS.iteritems():
-                    times = mta.times_from_gtfs_realtime(feed, stops)
-                    if times:
-                        times_by_line.update(times)
-                #times_by_line.update(mta.times_from_subwaytime(SUBWAYTIME_STOPS))
+                times_by_line.update(mta.times_from_subwaytime(SUBWAYTIME_STOPS))
                 last_mta_fetch = now
                 err = None
             except Exception, ex:
