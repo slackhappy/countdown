@@ -1,4 +1,3 @@
-import gtfs_realtime_pb2
 import urllib2
 import time
 from collections import defaultdict
@@ -18,32 +17,6 @@ REQUEST_HEADERS = {
 
 def make_url(url):
     return url.format(key=keys.MTA)
-#
-# Based on GTFS data.  More accurate, but only available for 1,2,3,4,5,6 and S
-# http://datamine.mta.info/sites/all/files/pdfs/GTFS-Realtime-NYC-Subway%20version%201%20dated%207%20Sep.pdf
-# feed numbers listed on http://datamine.mta.info/list-of-feeds
-#
-def times_from_gtfs_realtime(feed, stops):
-    url = make_url('http://datamine.mta.info/mta_esi.php?key={key}&feed_id=' + str(feed))
-    feed = gtfs_realtime_pb2.FeedMessage()
-    response = urllib2.urlopen(url, None, timeout=4)
-    if response.getcode() != 200:
-        print response.getcode(), url
-    feed.ParseFromString(response.read())
-    now = time.time()
-    times_by_line = defaultdict(list)
-    for entity in feed.entity:
-        if entity.HasField('trip_update'):
-            for stop_time in entity.trip_update.stop_time_update:
-                if stop_time.HasField('stop_id') and stop_time.stop_id in stops:
-                    if stop_time.arrival.time > now:
-                        times_by_line[entity.trip_update.trip.route_id].append(stop_time.arrival.time)
-
-    for line, times in times_by_line.items():
-        times_by_line[line] = sorted(times)[:3]
-    return times_by_line
-
-
 #
 # Based on info from http://subwaytime.mta.info/
 #
